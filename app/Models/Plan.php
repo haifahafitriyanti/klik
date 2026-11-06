@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Database\Factories\PlanFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Carbon;
@@ -19,6 +21,9 @@ use Illuminate\Support\Carbon;
  */
 class Plan extends Model
 {
+    /** @use HasFactory<PlanFactory> */
+    use HasFactory;
+
     /**
      * @var list<string>
      */

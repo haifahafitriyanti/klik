@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Database\Factories\AppealFactory;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Carbon;
@@ -23,6 +25,9 @@ use Illuminate\Support\Carbon;
  */
 class Appeal extends Model
 {
+    /** @use HasFactory<AppealFactory> */
+    use HasFactory;
+
     /**
      * @var list<string>
      */

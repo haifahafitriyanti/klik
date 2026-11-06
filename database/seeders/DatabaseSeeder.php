@@ -2,7 +2,6 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,14 +11,18 @@ class DatabaseSeeder extends Seeder
 
     /**
      * Seed the application's database.
+     *
+     * Hanya memasukkan data master KLiK (Jurusan, Kode Prodi, Paket, Brand, Kategori)
+     * secara idempoten tanpa menyisipkan data transaksi atau listing dummy.
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        $this->call([
+            JurusanSeeder::class,
+            ProdiCodeSeeder::class,
+            PlanSeeder::class,
+            BrandSeeder::class,
+            CategorySeeder::class,
         ]);
     }
 }
