@@ -11,6 +11,7 @@ Route::middleware(['auth', 'approved'])->group(function () {
 
 Route::middleware(['auth'])->group(function () {
     Route::get('verifikasi/status', [VerificationStatusController::class, 'show'])->name('verification.status');
+    Route::post('verifikasi/ktm', [VerificationStatusController::class, 'uploadKtm'])->name('verification.ktm.upload');
 });
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {

@@ -38,6 +38,15 @@ return [
             'report' => false,
         ],
 
+        'ktm' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/ktm'),
+            'visibility' => 'private',
+            'serve' => false,
+            'throw' => false,
+            'report' => false,
+        ],
+
         'public' => [
             'driver' => 'local',
             'root' => storage_path('app/public'),
