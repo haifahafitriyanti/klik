@@ -104,7 +104,7 @@ test('7. data prodi dan jurusan ditampilkan sesuai relasi master data', function
     $prodi = ProdiCode::create([
         'jurusan_id' => $jurusan->id,
         'kode' => '0109',
-        'nama_prodi' => 'Manajemen Informatika',
+        'nama_prodi' => 'D3 Manajemen Informatika',
         'jenjang' => 'D3',
         'created_by' => $admin->id,
     ]);
@@ -122,7 +122,7 @@ test('7. data prodi dan jurusan ditampilkan sesuai relasi master data', function
     $response->assertInertia(fn (Assert $page) => $page
         ->has('submissions.data', 1, fn (Assert $item) => $item
             ->where('nim', '2101092003')
-            ->where('prodi_name', 'Manajemen Informatika')
+            ->where('prodi_name', 'D3 Manajemen Informatika')
             ->where('jurusan_name', 'Teknologi Informasi')
             ->where('kode_prodi_tidak_dikenal', false)
             ->etc()

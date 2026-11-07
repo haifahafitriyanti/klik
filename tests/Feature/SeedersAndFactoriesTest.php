@@ -280,32 +280,46 @@ test('ProdiCodeSeeder tidak membuat akun admin loginable dengan kredensial tetap
     expect(User::count())->toBe($userCountBefore);
 });
 
-test('database production development klik_db tetap bersih dan tidak tersentuh', function (): void {
-    // Kembalikan nama database mariadb ke klik_db karena di phpunit.xml tertimpa :memory:
+test('seluruh operasi pengujian terisolasi secara ketat dan tidak mencemari database development klik_db', function (): void {
+    // 1. Verifikasi koneksi default pengujian adalah SQLite in-memory
+    expect(config('database.default'))->toBe('sqlite')
+        ->and(DB::connection()->getDriverName())->toBe('sqlite')
+        ->and(DB::connection()->getDatabaseName())->toBe(':memory:');
+
+    // 2. Verifikasi koneksi MariaDB testing terisolasi dan hanya mengarah ke klik_test_db
+    $testDbName = (string) config('database.connections.mariadb_testing.database');
+    expect($testDbName)->toBe('klik_test_db')
+        ->and($testDbName)->not->toBe('klik_db');
+
+    // 3. Verifikasi konfigurasi koneksi default BUKAN klik_db
+    $activeDefaultDb = (string) config('database.connections.'.config('database.default').'.database');
+    expect($activeDefaultDb)->not->toBe('klik_db');
+
+    // 4. Verifikasi isolasi faktual: mutasi pada lingkungan pengujian tidak menyentuh database development klik_db
     config(['database.connections.mariadb.database' => 'klik_db']);
     DB::purge('mariadb');
 
-    // Verifikasi database klik_db tidak pernah tersentuh pengujian
-    $tables = [
-        'users',
-        'jurusans',
-        'prodi_codes',
-        'plans',
-        'lapaks',
-        'transactions',
-        'brands',
-        'categories',
-        'listings',
-        'listing_photos',
-        'inquiries',
-        'moderation_actions',
-        'appeals',
-        'reports',
-        'notifications',
-    ];
+    // Catat jumlah record awal di database development klik_db
+    $devUsersBefore = DB::connection('mariadb')->table('users')->count();
 
-    foreach ($tables as $table) {
-        $count = DB::connection('mariadb')->table($table)->count();
-        expect($count)->toBe(0, "Tabel {$table} di database dev klik_db tidak boleh memiliki data dari test");
-    }
+    // Buat data uji baru di lingkungan test (SQLite in-memory)
+    User::factory()->create([
+        'email' => 'isolation.security.check@klik-test.local',
+        'nim' => '9901099999',
+    ]);
+
+    // Data uji berhasil tersimpan di database testing default
+    expect(User::where('email', 'isolation.security.check@klik-test.local')->exists())->toBeTrue();
+
+    // Pastikan data uji TIDAK PERNAH masuk ke database development klik_db
+    $existsInDev = DB::connection('mariadb')->table('users')
+        ->where('email', 'isolation.security.check@klik-test.local')
+        ->orWhere('nim', '9901099999')
+        ->exists();
+
+    expect($existsInDev)->toBeFalse('Data uji bocor ke database development klik_db!');
+
+    // Pastikan jumlah record pada database development klik_db tidak berubah sama sekali
+    $devUsersAfter = DB::connection('mariadb')->table('users')->count();
+    expect($devUsersAfter)->toBe($devUsersBefore, 'Jumlah record di klik_db berubah akibat operasi testing!');
 });

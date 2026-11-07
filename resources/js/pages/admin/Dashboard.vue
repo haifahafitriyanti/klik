@@ -374,7 +374,7 @@ const handleReject = () => {
                                 <td class="px-4 py-3.5">
                                     <div class="font-mono font-medium text-foreground">{{ sub.nim }}</div>
                                     <div class="text-[11px] text-muted-foreground truncate max-w-xs">
-                                        <span v-if="sub.prodi_name">{{ sub.jenjang }} {{ sub.prodi_name }}</span>
+                                        <span v-if="sub.prodi_name">{{ sub.prodi_name }}</span>
                                         <span v-else-if="sub.kode_prodi_tidak_dikenal" class="text-amber-700 font-medium dark:text-amber-400">
                                             Kode [{{ sub.kode_prodi_nim }}] Tidak Dikenal
                                         </span>
@@ -525,7 +525,7 @@ const handleReject = () => {
                     <div>
                         <span class="text-muted-foreground">Program Studi:</span>
                         <p class="font-medium text-foreground">
-                            {{ selectedSubmission.prodi_name ? `${selectedSubmission.jenjang} ${selectedSubmission.prodi_name}` : 'Tidak Dikenal' }}
+                            {{ selectedSubmission.prodi_name || 'Tidak Dikenal' }}
                         </p>
                         <span v-if="selectedSubmission.jurusan_name" class="text-[11px] text-muted-foreground">
                             Jurusan: {{ selectedSubmission.jurusan_name }}
