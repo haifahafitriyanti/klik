@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\VerificationController;
 use App\Http\Controllers\Auth\VerificationStatusController;
 use Illuminate\Support\Facades\Route;
 
@@ -15,7 +16,10 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::prefix('admin')->middleware(['auth', 'admin'])->group(function () {
-    Route::inertia('/', 'admin/Dashboard')->name('admin.dashboard');
+    Route::get('/', [VerificationController::class, 'index'])->name('admin.dashboard');
+    Route::get('verifikasi/{user}/ktm', [VerificationController::class, 'ktm'])->name('admin.verifikasi.ktm');
+    Route::post('verifikasi/{user}/setujui', [VerificationController::class, 'approve'])->name('admin.verifikasi.approve');
+    Route::post('verifikasi/{user}/tolak', [VerificationController::class, 'reject'])->name('admin.verifikasi.reject');
 });
 
 require __DIR__.'/settings.php';
