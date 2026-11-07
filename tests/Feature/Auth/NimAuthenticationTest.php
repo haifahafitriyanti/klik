@@ -369,19 +369,21 @@ test('27. seluruh endpoint login dan konfirmasi passkey dinonaktifkan secara fun
     $this->get('/passkeys/confirm/options')->assertNotFound();
 });
 
-test('28. pendaftaran akun publik via register ditolak sementara untuk Fase 3.1', function () {
-    // GET /register dialihkan ke login
+test('28. pendaftaran akun publik via register aktif untuk mahasiswa dan alumni pada Fase 3.2', function () {
+    // GET /register dapat diakses guest
     $getResponse = $this->get('/register');
-    $getResponse->assertRedirect(route('login'));
+    $getResponse->assertOk();
 
-    // POST /register ditolak 403
+    // POST /register berhasil dengan NIM dan password
     $postResponse = $this->post('/register', [
-        'name' => 'Hacker User',
-        'email' => 'hacker@example.com',
-        'password' => 'password123',
-        'password_confirmation' => 'password123',
+        'nim' => '2101092099',
+        'name' => 'Calon Pengguna',
+        'status_mahasiswa' => 'aktif',
+        'password' => 'secret123',
+        'password_confirmation' => 'secret123',
     ]);
-    $postResponse->assertForbidden();
+    $postResponse->assertRedirect(route('verification.status'));
+    $this->assertAuthenticated();
 });
 
 test('29. akun suspended dengan password salah tetap mendapatkan pesan error generik auth.failed', function () {

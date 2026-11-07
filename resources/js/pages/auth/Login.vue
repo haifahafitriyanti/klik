@@ -10,6 +10,7 @@ import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
+import { register } from '@/routes';
 
 defineOptions({
     layout: {
@@ -103,9 +104,15 @@ defineProps<{
             </Button>
         </div>
 
+        <div class="text-center text-sm text-muted-foreground">
+            Belum memiliki akun?
+            <TextLink :href="register()" class="font-medium text-foreground underline underline-offset-4 ml-1">
+                Daftar sekarang
+            </TextLink>
+        </div>
+
         <div class="text-center text-xs text-muted-foreground border-t pt-4">
-            Khusus civitas akademika Politeknik Negeri Padang.
-            <p class="mt-1">Pendaftaran akun baru (KTM) dibuka pada Fase 3.2.</p>
+            Khusus mahasiswa dan alumni Politeknik Negeri Padang.
         </div>
     </Form>
 </template>
