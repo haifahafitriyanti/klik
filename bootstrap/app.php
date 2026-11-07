@@ -1,7 +1,11 @@
 <?php
 
+use App\Http\Middleware\EnsureAccountIsApproved;
+use App\Http\Middleware\EnsureNotSuspended;
+use App\Http\Middleware\EnsureUserIsAdmin;
 use App\Http\Middleware\HandleAppearance;
 use App\Http\Middleware\HandleInertiaRequests;
+use App\Models\User;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -21,7 +25,35 @@ return Application::configure(basePath: dirname(__DIR__))
             HandleAppearance::class,
             HandleInertiaRequests::class,
             AddLinkHeadersForPreloadedAssets::class,
+            EnsureNotSuspended::class,
         ]);
+
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
+            'approved' => EnsureAccountIsApproved::class,
+            'not_suspended' => EnsureNotSuspended::class,
+        ]);
+
+        $middleware->redirectGuestsTo(fn () => route('login'));
+
+        $middleware->redirectUsersTo(function (Request $request): string {
+            /** @var User|null $user */
+            $user = $request->user();
+
+            if (! $user) {
+                return route('login');
+            }
+
+            if ($user->isAdmin()) {
+                return route('admin.dashboard');
+            }
+
+            if (! $user->isApproved()) {
+                return route('verification.status');
+            }
+
+            return route('dashboard');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

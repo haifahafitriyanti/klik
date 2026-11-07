@@ -23,7 +23,7 @@ test('two factor challenge can be rendered', function () {
     $user = User::factory()->withTwoFactor()->create();
 
     $this->post(route('login'), [
-        'email' => $user->email,
+        'nim' => $user->nim,
         'password' => 'password',
     ]);
 
@@ -32,4 +32,22 @@ test('two factor challenge can be rendered', function () {
         ->assertInertia(fn (Assert $page) => $page
             ->component('auth/TwoFactorChallenge'),
         );
+});
+
+test('suspended user with two factor cannot complete login or bypass suspended check', function () {
+    Features::twoFactorAuthentication([
+        'confirm' => true,
+        'confirmPassword' => true,
+    ]);
+
+    $user = User::factory()->withTwoFactor()->suspended()->create();
+
+    // Login dengan NIM dan password langsung ditolak pada tahap autentikasi awal
+    $response = $this->post(route('login'), [
+        'nim' => $user->nim,
+        'password' => 'password',
+    ]);
+
+    $this->assertGuest();
+    $response->assertSessionHasErrors('nim');
 });

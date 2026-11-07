@@ -8,15 +8,13 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Spinner } from '@/components/ui/spinner';
-import { register } from '@/routes';
 import { store } from '@/routes/login';
 import { request } from '@/routes/password';
-import PasskeyVerify from '@/components/PasskeyVerify.vue';
 
 defineOptions({
     layout: {
-        title: 'Log in to your account',
-        description: 'Enter your email and password below to log in',
+        title: 'Masuk ke KLiK',
+        description: 'Masukkan 10 digit NIM dan password Anda untuk masuk',
     },
 });
 
@@ -27,7 +25,7 @@ defineProps<{
 </script>
 
 <template>
-    <Head title="Log in" />
+    <Head title="Masuk" />
 
     <div
         v-if="status"
@@ -35,8 +33,6 @@ defineProps<{
     >
         {{ status }}
     </div>
-
-    <PasskeyVerify />
 
     <Form
         v-bind="store.form()"
@@ -46,18 +42,22 @@ defineProps<{
     >
         <div class="grid gap-6">
             <div class="grid gap-2">
-                <Label for="email">Email address</Label>
+                <Label for="nim">Nomor Induk Mahasiswa (NIM)</Label>
                 <Input
-                    id="email"
-                    type="email"
-                    name="email"
+                    id="nim"
+                    type="text"
+                    name="nim"
+                    inputmode="numeric"
+                    pattern="[0-9]{10}"
+                    maxlength="10"
                     required
                     v-focus
                     :tabindex="1"
-                    autocomplete="email"
-                    placeholder="email@example.com"
+                    autocomplete="username"
+                    placeholder="10 digit NIM (contoh: 2101092001)"
+                    data-test="nim-input"
                 />
-                <InputError :message="errors.email" />
+                <InputError :message="errors.nim" />
             </div>
 
             <div class="grid gap-2">
@@ -69,7 +69,7 @@ defineProps<{
                         class="text-sm"
                         :tabindex="5"
                     >
-                        Forgot your password?
+                        Lupa password?
                     </TextLink>
                 </div>
                 <PasswordInput
@@ -78,33 +78,34 @@ defineProps<{
                     required
                     :tabindex="2"
                     autocomplete="current-password"
-                    placeholder="Password"
+                    placeholder="Masukkan password"
+                    data-test="password-input"
                 />
                 <InputError :message="errors.password" />
             </div>
 
             <div class="flex items-center justify-between">
-                <Label for="remember" class="flex items-center space-x-3">
+                <Label for="remember" class="flex items-center space-x-3 cursor-pointer">
                     <Checkbox id="remember" name="remember" :tabindex="3" />
-                    <span>Remember me</span>
+                    <span>Ingat saya</span>
                 </Label>
             </div>
 
             <Button
                 type="submit"
-                class="mt-4 w-full"
+                class="mt-2 w-full"
                 :tabindex="4"
                 :disabled="processing"
                 data-test="login-button"
             >
                 <Spinner v-if="processing" />
-                Log in
+                Masuk
             </Button>
         </div>
 
-        <div class="text-center text-sm text-muted-foreground">
-            Don't have an account?
-            <TextLink :href="register()" :tabindex="5">Sign up</TextLink>
+        <div class="text-center text-xs text-muted-foreground border-t pt-4">
+            Khusus civitas akademika Politeknik Negeri Padang.
+            <p class="mt-1">Pendaftaran akun baru (KTM) dibuka pada Fase 3.2.</p>
         </div>
     </Form>
 </template>

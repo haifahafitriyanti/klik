@@ -45,7 +45,7 @@ return [
     |
     */
 
-    'username' => 'email',
+    'username' => 'nim',
 
     'email' => 'email',
 
@@ -60,7 +60,7 @@ return [
     |
     */
 
-    'lowercase_usernames' => true,
+    'lowercase_usernames' => false,
 
     /*
     |--------------------------------------------------------------------------
@@ -169,9 +169,9 @@ return [
             'confirmPassword' => true,
             // 'window' => 0
         ]),
-        Features::passkeys([
-            'confirmPassword' => true,
-        ]),
+        // Features::passkeys([
+        //     'confirmPassword' => true,
+        // ]),
     ],
 
 ];

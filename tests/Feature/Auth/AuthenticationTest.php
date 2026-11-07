@@ -1,7 +1,6 @@
 <?php
 
 use App\Models\User;
-use Illuminate\Support\Facades\RateLimiter;
 use Laravel\Fortify\Features;
 
 test('login screen can be rendered', function () {
@@ -10,16 +9,28 @@ test('login screen can be rendered', function () {
     $response->assertOk();
 });
 
-test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+test('users can authenticate using the login screen with nim', function () {
+    $user = User::factory()->verified()->create();
 
     $response = $this->post(route('login.store'), [
-        'email' => $user->email,
+        'nim' => $user->nim,
         'password' => 'password',
     ]);
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
+});
+
+test('unverified users are redirected to verification status on login', function () {
+    $user = User::factory()->create(['status_verifikasi' => 'menunggu']);
+
+    $response = $this->post(route('login.store'), [
+        'nim' => $user->nim,
+        'password' => 'password',
+    ]);
+
+    $this->assertAuthenticated();
+    $response->assertRedirect(route('verification.status'));
 });
 
 test('users with two factor enabled are redirected to two factor challenge', function () {
@@ -30,10 +41,10 @@ test('users with two factor enabled are redirected to two factor challenge', fun
         'confirmPassword' => true,
     ]);
 
-    $user = User::factory()->withTwoFactor()->create();
+    $user = User::factory()->verified()->withTwoFactor()->create();
 
     $response = $this->post(route('login'), [
-        'email' => $user->email,
+        'nim' => $user->nim,
         'password' => 'password',
     ]);
 
@@ -46,7 +57,7 @@ test('users can not authenticate with invalid password', function () {
     $user = User::factory()->create();
 
     $this->post(route('login.store'), [
-        'email' => $user->email,
+        'nim' => $user->nim,
         'password' => 'wrong-password',
     ]);
 
@@ -66,10 +77,15 @@ test('users can logout', function () {
 test('users are rate limited', function () {
     $user = User::factory()->create();
 
-    RateLimiter::increment(md5('login'.implode('|', [$user->email, '127.0.0.1'])), amount: 5);
+    for ($i = 0; $i < 5; $i++) {
+        $this->post(route('login.store'), [
+            'nim' => $user->nim,
+            'password' => 'wrong-password',
+        ]);
+    }
 
     $response = $this->post(route('login.store'), [
-        'email' => $user->email,
+        'nim' => $user->nim,
         'password' => 'wrong-password',
     ]);
 

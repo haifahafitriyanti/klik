@@ -197,6 +197,38 @@ class User extends Authenticatable implements MustVerifyEmail, PasskeyUser
     }
 
     /**
+     * Periksa apakah akun telah diverifikasi dan disetujui.
+     */
+    public function isApproved(): bool
+    {
+        return $this->status_verifikasi === 'disetujui';
+    }
+
+    /**
+     * Periksa apakah status verifikasi akun masih menunggu peninjauan.
+     */
+    public function isPendingVerification(): bool
+    {
+        return $this->status_verifikasi === 'menunggu';
+    }
+
+    /**
+     * Periksa apakah pengajuan verifikasi akun ditolak.
+     */
+    public function isRejectedVerification(): bool
+    {
+        return $this->status_verifikasi === 'ditolak';
+    }
+
+    /**
+     * Periksa apakah akun dalam status penangguhan/dibekukan.
+     */
+    public function isSuspended(): bool
+    {
+        return (bool) $this->is_suspended;
+    }
+
+    /**
      * Periksa apakah pengguna berstatus mahasiswa aktif.
      */
     public function isMahasiswaAktif(): bool

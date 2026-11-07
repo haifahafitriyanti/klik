@@ -6,13 +6,14 @@ beforeEach(function () {
     $this->skipUnlessFortifyHas(Features::registration());
 });
 
-test('registration screen can be rendered', function () {
+test('registration screen redirects to login with informative message for Phase 3.1', function () {
     $response = $this->get(route('register'));
 
-    $response->assertOk();
+    $response->assertRedirect(route('login'));
+    $response->assertSessionHasErrors('nim');
 });
 
-test('new users can register', function () {
+test('public registration endpoint is disabled for Phase 3.1', function () {
     $response = $this->post(route('register.store'), [
         'name' => 'Test User',
         'email' => 'test@example.com',
@@ -20,6 +21,6 @@ test('new users can register', function () {
         'password_confirmation' => 'password',
     ]);
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertForbidden();
+    $this->assertGuest();
 });
