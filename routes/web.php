@@ -2,9 +2,12 @@
 
 use App\Http\Controllers\Admin\VerificationController;
 use App\Http\Controllers\Auth\VerificationStatusController;
+use App\Http\Controllers\CatalogController;
+use App\Http\Controllers\HomeController;
 use Illuminate\Support\Facades\Route;
 
-Route::inertia('/', 'Welcome')->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('katalog', [CatalogController::class, 'index'])->name('catalog.index');
 
 Route::middleware(['auth', 'approved'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');

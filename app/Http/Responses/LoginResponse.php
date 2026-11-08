@@ -39,6 +39,6 @@ class LoginResponse implements LoginResponseContract, RegisterResponseContract, 
             return redirect()->intended(route('verification.status'));
         }
 
-        return redirect()->intended(route('dashboard'));
+        return redirect()->intended(route('home'));
     }
 }

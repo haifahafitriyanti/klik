@@ -52,7 +52,7 @@ return Application::configure(basePath: dirname(__DIR__))
                 return route('verification.status');
             }
 
-            return route('dashboard');
+            return route('home');
         });
     })
     ->withExceptions(function (Exceptions $exceptions): void {

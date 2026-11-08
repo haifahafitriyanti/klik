@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Database\Factories\ListingFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -153,5 +154,31 @@ class Listing extends Model
     public function isKedaluwarsa(): bool
     {
         return $this->status === 'kedaluwarsa';
+    }
+
+    /**
+     * Scope listing yang sah untuk dipublikasikan pada katalog publik atau landing page.
+     *
+     * Kriteria publikasi (PRD FR-04, FR-05, FR-15):
+     * 1. Status listing aktif (bukan terjual, tersembunyi, atau kedaluwarsa).
+     * 2. Lapak berstatus aktif.
+     * 3. Masa sewa lapak belum habis (expires_at > now()).
+     * 4. Akun pemilik lapak tidak dalam status ditangguhkan (is_suspended = false).
+     * 5. Akun pemilik lapak telah diverifikasi dan disetujui (status_verifikasi = 'disetujui').
+     *
+     * @param  Builder<Listing>  $query
+     * @return Builder<Listing>
+     */
+    public function scopeForPublicCatalog(Builder $query): Builder
+    {
+        return $query->where('status', 'aktif')
+            ->whereHas('lapak', function (Builder $lapakQuery) {
+                $lapakQuery->where('status', 'aktif')
+                    ->where('expires_at', '>', now())
+                    ->whereHas('user', function (Builder $userQuery) {
+                        $userQuery->where('is_suspended', false)
+                            ->where('status_verifikasi', 'disetujui');
+                    });
+            });
     }
 }

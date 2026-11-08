@@ -31,7 +31,7 @@ test('2. form registrasi tidak dapat diakses oleh pengguna yang sudah login (dia
 
     $response = $this->actingAs($user)->get(route('register'));
 
-    $response->assertRedirect(route('dashboard'));
+    $response->assertRedirect(route('home'));
 });
 
 test('3. registrasi gagal jika NIM tidak diisi', function () {

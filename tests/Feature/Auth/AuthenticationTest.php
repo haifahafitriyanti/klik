@@ -18,7 +18,7 @@ test('users can authenticate using the login screen with nim', function () {
     ]);
 
     $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
+    $response->assertRedirect(route('home', absolute: false));
 });
 
 test('unverified users are redirected to verification status on login', function () {

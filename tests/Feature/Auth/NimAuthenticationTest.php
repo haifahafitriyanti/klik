@@ -16,7 +16,7 @@ test('1. pengguna dapat login menggunakan NIM 10 digit dan password yang benar',
     ]);
 
     $this->assertAuthenticatedAs($user);
-    $response->assertRedirect(route('dashboard'));
+    $response->assertRedirect(route('home'));
 });
 
 test('2. login ditolak jika password salah', function () {
@@ -79,7 +79,7 @@ test('5. NIM dengan angka nol di depan tetap valid dan mempertahankan leading ze
     ]);
 
     $this->assertAuthenticatedAs($user);
-    $response->assertRedirect(route('dashboard'));
+    $response->assertRedirect(route('home'));
 });
 
 test('6. email tidak dapat digunakan sebagai credential pengganti NIM', function () {
@@ -134,7 +134,7 @@ test('8 & 9. administrator berhasil login dengan NIM dan diarahkan ke area admin
     $response->assertRedirect(route('admin.dashboard'));
 });
 
-test('10. pengguna biasa yang disetujui diarahkan ke dashboard pengguna', function () {
+test('10. pengguna biasa yang disetujui diarahkan ke homepage marketplace', function () {
     $user = User::factory()->verified()->create([
         'nim' => '2101092005',
         'password' => 'secret123',
@@ -146,7 +146,7 @@ test('10. pengguna biasa yang disetujui diarahkan ke dashboard pengguna', functi
     ]);
 
     $this->assertAuthenticatedAs($user);
-    $response->assertRedirect(route('dashboard'));
+    $response->assertRedirect(route('home'));
 });
 
 test('11. pengguna biasa ditolak dengan 403 saat mengakses route admin secara langsung', function () {
@@ -174,8 +174,8 @@ test('12 & 13. role tidak dapat dimanipulasi melalui request login', function ()
     ]);
 
     $this->assertAuthenticatedAs($user);
-    // Tetap diarahkan ke dashboard pengguna biasa, bukan admin
-    $response->assertRedirect(route('dashboard'));
+    // Tetap diarahkan ke homepage marketplace, bukan admin
+    $response->assertRedirect(route('home'));
     expect($user->fresh()->role)->toBe('user');
 });
 
@@ -351,10 +351,10 @@ test('26. pengguna yang sudah login dialihkan sesuai role dan status ketika memb
     $responseAdmin = $this->actingAs($admin)->get(route('login'));
     $responseAdmin->assertRedirect(route('admin.dashboard'));
 
-    // 2. User disetujui dialihkan ke dashboard
+    // 2. User disetujui dialihkan ke homepage marketplace
     $userApproved = User::factory()->verified()->create();
     $responseApproved = $this->actingAs($userApproved)->get(route('login'));
-    $responseApproved->assertRedirect(route('dashboard'));
+    $responseApproved->assertRedirect(route('home'));
 
     // 3. User menunggu verifikasi dialihkan ke verification.status
     $userPending = User::factory()->create(['status_verifikasi' => 'menunggu']);
@@ -462,4 +462,50 @@ test('33. perubahan role admin menjadi user di tengah sesi langsung menolak akse
     // Request berikutnya ke /admin ditolak 403
     $response = $this->get(route('admin.dashboard'));
     $response->assertForbidden();
+});
+
+test('34. intended URL yang aman dihormati saat pengguna disetujui login setelah dicegat middleware', function () {
+    $user = User::factory()->verified()->create([
+        'nim' => '2101092099',
+        'password' => 'secret123',
+    ]);
+
+    // 1. Guest mencoba mengakses /dashboard yang terproteksi
+    $initialResponse = $this->get(route('dashboard'));
+    $initialResponse->assertRedirect(route('login'));
+
+    // 2. Guest melakukan login dari sesi tersebut
+    $loginResponse = $this->post(route('login.store'), [
+        'nim' => '2101092099',
+        'password' => 'secret123',
+    ]);
+
+    $this->assertAuthenticatedAs($user);
+    // Intended URL (/dashboard) dihormati dan diprioritaskan
+    $loginResponse->assertRedirect(route('dashboard'));
+});
+
+test('35. pengguna disetujui yang login langsung tanpa intended URL diarahkan ke homepage', function () {
+    $user = User::factory()->verified()->create([
+        'nim' => '2101092098',
+        'password' => 'secret123',
+    ]);
+
+    $loginResponse = $this->post(route('login.store'), [
+        'nim' => '2101092098',
+        'password' => 'secret123',
+    ]);
+
+    $this->assertAuthenticatedAs($user);
+    $loginResponse->assertRedirect(route('home'));
+});
+
+test('36. guest dapat mengakses homepage dan katalog publik secara bebas tanpa login', function () {
+    $this->assertGuest();
+
+    $homeResponse = $this->get(route('home'));
+    $homeResponse->assertOk();
+
+    $catalogResponse = $this->get(route('catalog.index'));
+    $catalogResponse->assertOk();
 });
