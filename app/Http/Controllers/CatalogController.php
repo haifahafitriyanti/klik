@@ -238,4 +238,59 @@ class CatalogController extends Controller
             'filterErrors' => $priceError ? ['price' => $priceError] : null,
         ]);
     }
+
+    /**
+     * Tampilkan halaman detail laptop publik marketplace KLiK (Fase 4.4).
+     */
+    public function show(int $listing): Response
+    {
+        /** @var Listing $item */
+        $item = Listing::query()
+            ->forPublicCatalog()
+            ->with([
+                'category:id,nama',
+                'brand:id,nama',
+                'photos' => function ($photoQuery) {
+                    $photoQuery->select(['id', 'listing_id', 'path', 'created_at'])->orderBy('id', 'asc');
+                },
+                'lapak.user:id,name,status_mahasiswa,status_verifikasi',
+            ])
+            ->findOrFail($listing);
+
+        $seller = $item->lapak?->user;
+
+        $photos = $item->photos->map(fn (ListingPhoto $p) => [
+            'id' => $p->id,
+            'url' => $p->path,
+        ])->values()->all();
+
+        $detail = [
+            'id' => $item->id,
+            'judul' => $item->judul,
+            'model' => $item->model,
+            'harga' => $item->harga,
+            'kondisi' => $item->kondisi,
+            'prosesor' => $item->prosesor,
+            'ram_gb' => $item->ram_gb,
+            'penyimpanan' => $item->penyimpanan,
+            'gpu_dedicated' => (bool) $item->gpu_dedicated,
+            'tipe_2in1' => (bool) $item->tipe_2in1,
+            'berat_kg' => $item->berat_kg !== null ? (string) $item->berat_kg : null,
+            'deskripsi' => $item->deskripsi,
+            'brand_name' => $item->brand?->nama,
+            'category_name' => $item->category?->nama,
+            'photos' => $photos,
+            'seller' => [
+                'name' => $seller ? $seller->name : 'Mahasiswa PNP',
+                'status_mahasiswa' => $seller ? $seller->status_mahasiswa : 'aktif',
+                'status_verifikasi' => $seller ? $seller->status_verifikasi : 'disetujui',
+            ],
+            'created_at' => $item->created_at?->diffForHumans(),
+            'published_date' => $item->created_at?->format('d M Y'),
+        ];
+
+        return Inertia::render('Catalog/Show', [
+            'listing' => $detail,
+        ]);
+    }
 }

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import type { MarketplaceListing } from '@/types';
 
 interface Props {
@@ -105,12 +106,13 @@ const conditionLabel = computed(() => {
 
             <!-- Card Body: Judul & Spesifikasi (Sesuai All Products.png) -->
             <div class="mt-4">
-                <h3
-                    class="text-sm sm:text-base font-bold text-white transition-colors group-hover:text-[#00EFA5] line-clamp-1"
+                <Link
+                    :href="`/katalog/${listing.id}`"
+                    class="block text-sm sm:text-base font-bold text-white transition-colors group-hover:text-[#00EFA5] line-clamp-1 hover:underline"
                     :title="listing.judul"
                 >
                     {{ listing.judul }}
-                </h3>
+                </Link>
 
                 <!-- Specs Line 1: Prosesor -->
                 <p class="mt-1 text-xs text-[#94A3B8] truncate">
@@ -143,12 +145,12 @@ const conditionLabel = computed(() => {
             </div>
 
             <!-- Tombol Lihat Detail -->
-            <button
-                type="button"
+            <Link
+                :href="`/katalog/${listing.id}`"
                 class="rounded-lg border border-[#00EFA5]/60 bg-transparent px-3 py-1.5 text-xs font-semibold text-[#00EFA5] transition-all hover:bg-[#00EFA5]/15 hover:border-[#00EFA5]"
             >
                 Lihat Detail
-            </button>
+            </Link>
         </div>
     </div>
 </template>

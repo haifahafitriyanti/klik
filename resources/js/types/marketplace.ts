@@ -61,3 +61,35 @@ export interface CatalogFilters {
 export interface CatalogFilterErrors {
     price?: string;
 }
+
+export interface MarketplaceListingPhoto {
+    id: number;
+    url: string;
+}
+
+export interface MarketplaceSeller {
+    name: string;
+    status_mahasiswa: string;
+    status_verifikasi: string;
+}
+
+export interface MarketplaceListingDetail {
+    id: number;
+    judul: string;
+    model: string;
+    harga: number;
+    kondisi: string;
+    prosesor: string;
+    ram_gb: number;
+    penyimpanan: string;
+    gpu_dedicated: boolean;
+    tipe_2in1: boolean;
+    berat_kg: string | null;
+    deskripsi: string;
+    brand_name: string | null;
+    category_name: string | null;
+    photos: MarketplaceListingPhoto[];
+    seller: MarketplaceSeller;
+    created_at: string | null;
+    published_date: string | null;
+}

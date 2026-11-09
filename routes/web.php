@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 Route::get('katalog', [CatalogController::class, 'index'])->name('catalog.index');
+Route::get('katalog/{listing}', [CatalogController::class, 'show'])->name('catalog.show')->whereNumber('listing');
 
 Route::middleware(['auth', 'approved'])->group(function () {
     Route::inertia('dashboard', 'Dashboard')->name('dashboard');
