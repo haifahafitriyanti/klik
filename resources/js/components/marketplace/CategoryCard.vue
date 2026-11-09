@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
+import { Link } from '@inertiajs/vue3';
 import type { MarketplaceCategory } from '@/types';
 
 interface Props {
@@ -18,6 +19,7 @@ const meta = computed(() => {
                 label: 'MacBook',
                 spec: 'Brand Apple (macOS)',
                 badge: 'Apple',
+                slug: 'macbook',
                 iconColor: 'text-[#F7F9FB]',
                 accentGlow: 'group-hover:shadow-[0_0_20px_rgba(255,255,255,0.15)]',
             };
@@ -26,6 +28,7 @@ const meta = computed(() => {
                 label: 'Laptop Gaming',
                 spec: 'Dedicated GPU • RAM ≥ 8GB',
                 badge: 'High Perf',
+                slug: 'gaming',
                 iconColor: 'text-[#00EFA5]',
                 accentGlow: 'group-hover:shadow-[0_0_20px_rgba(0,239,165,0.2)]',
             };
@@ -34,6 +37,7 @@ const meta = computed(() => {
                 label: 'Laptop 2-in-1',
                 spec: 'Touchscreen • Engsel 360°',
                 badge: 'Convertible',
+                slug: '2-in-1',
                 iconColor: 'text-[#F18A38]',
                 accentGlow: 'group-hover:shadow-[0_0_20px_rgba(241,138,56,0.2)]',
             };
@@ -42,6 +46,7 @@ const meta = computed(() => {
                 label: 'Ultrabook',
                 spec: 'Berat ≤ 1,5 kg • SSD',
                 badge: 'Slim & Light',
+                slug: 'ultrabook',
                 iconColor: 'text-sky-400',
                 accentGlow: 'group-hover:shadow-[0_0_20px_rgba(56,189,248,0.2)]',
             };
@@ -50,16 +55,19 @@ const meta = computed(() => {
                 label: 'Laptop Standar',
                 spec: 'Kebutuhan Harian Kuliah',
                 badge: 'Essential',
+                slug: 'standard',
                 iconColor: 'text-[#A4AEBB]',
                 accentGlow: 'group-hover:shadow-[0_0_20px_rgba(164,174,187,0.15)]',
             };
     }
 });
+
+const categoryUrl = computed(() => `/katalog?category=${meta.value.slug}`);
 </script>
 
 <template>
-    <a
-        href="#listing-terbaru"
+    <Link
+        :href="categoryUrl"
         class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-[#1F293D] bg-[#161D2B] p-5 transition-all duration-300 hover:-translate-y-1 hover:border-[#00EFA5]/60 hover:bg-[#1A2436]"
         :class="meta.accentGlow"
     >
@@ -151,5 +159,5 @@ const meta = computed(() => {
                 {{ meta.spec }}
             </p>
         </div>
-    </a>
+    </Link>
 </template>

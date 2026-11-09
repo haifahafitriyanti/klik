@@ -3,6 +3,14 @@ export interface MarketplaceCategory {
     nama: string;
     prioritas: number;
     kriteria: string | null;
+    slug?: string;
+    full_slug?: string;
+}
+
+export interface MarketplaceBrand {
+    id: number;
+    nama: string;
+    slug: string;
 }
 
 export interface MarketplaceListing {
@@ -41,3 +49,15 @@ export interface PaginatedListings {
     total: number;
 }
 
+export interface CatalogFilters {
+    q: string | null;
+    category: string | null;
+    brand: string | null;
+    min_price: number | null;
+    max_price: number | null;
+    sort: 'newest' | 'price_asc' | 'price_desc' | string;
+}
+
+export interface CatalogFilterErrors {
+    price?: string;
+}
